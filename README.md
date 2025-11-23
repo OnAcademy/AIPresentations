@@ -4,6 +4,8 @@ Complete implementation and tutorials for all concepts covered in the IROST pres
 
 ## 📚 Overview
 
+### ✨✨✨Open code_interactive.html in the browser to review the learning path.✨✨✨
+
 This repository contains comprehensive code examples, tutorials, and documentation for:
 
 - **application.html** - Deep Learning Revolution (DNNs, CNNs, RNNs, GANs, Transformers, Diffusion)

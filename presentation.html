@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ارائه کامل هوش مصنوعی مولد</title>
+    <style>
+        /* تنظیمات ریشه و بدنه */
+        html {
+            overflow: hidden; /* جلوگیری از اسکرول بار پیش‌فرض مرورگر */
+        }
+
+        body {
+            font-family: Tahoma, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #111; /* پس‌زمینه تیره برای فضای بین اسلایدها */
+        }
+
+        /* کانتینر اصلی اسلایدها */
+        #presentation-container {
+            width: 100vw; /* 100% عرض صفحه */
+            height: 100vh; /* 100% ارتفاع صفحه */
+            overflow-y: scroll; /* اسکرول عمودی فعال باشد */
+            /* جادوی اسلایدهای تمام‌صفحه */
+            scroll-snap-type: y mandatory; 
+        }
+
+        /* استایل پایه هر اسلاید */
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 80px;
+            box-sizing: border-box; /* برای اینکه padding ارتفاع را خراب نکند */
+            scroll-snap-align: start; /* هر اسلاید به بالای صفحه می‌چسبد */
+            position: relative;
+            background-color: #f5f7fa; /* پس‌زمینه روشن پیش‌فرض */
+            color: #333;
+        }
+
+        /* استایل اسلاید عنوان (اول و آخر) */
+        .slide-title {
+            background-color: #0d47a1; /* آبی تیره */
+            color: #ffffff;
+            text-align: center;
+        }
+        .slide-title h1 {
+            font-size: 4.5em;
+            margin-bottom: 20px;
+        }
+        .slide-title p {
+            font-size: 1.8em;
+            color: #bbdefb;
+        }
+
+        /* استایل اسلایدهای جداکننده بخش */
+        .slide-divider {
+            background-color: #1a237e; /* آبی سرمه‌ای */
+            color: #ffffff;
+            text-align: center;
+        }
+        .slide-divider h2 {
+            font-size: 3.5em;
+            border-bottom: 3px solid #534bae;
+            padding-bottom: 20px;
+        }
+
+        /* استایل اسلایدهای محتوا (دو ستونه) */
+        .slide-content {
+            display: grid;
+            grid-template-columns: 55% 45%; /* تقسیم صفحه به دو بخش */
+            align-items: center;
+            gap: 40px;
+        }
+
+        /* استایل اسلایدهای محتوای تکی (تمام عرض) */
+        .slide-content-full {
+             display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start; /* محتوا از راست شروع شود */
+            width: 100%;
+        }
+
+        .content-text {
+            /* این بخش محتوای متنی را نگه می‌دارد */
+        }
+        
+        /* استایل جایگاه تصویر/گراف */
+        .media-placeholder {
+            display: inline-block; /* fit tightly around image */
+            background-color: #e3f2fd; /* light blue */
+            border: 3px dashed #1976d2; /* blue border */
+            border-radius: 15px;
+            padding: 10px; /* small inner space around image */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            max-width: 100%;
+        }
+        .media-placeholder img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        /* شماره اسلاید */
+        .slide-number {
+            position: absolute;
+            bottom: 25px;
+            left: 40px;
+            font-size: 1.2em;
+            color: #777;
+            direction: ltr;
+        }
+
+        /* راهنمای اسکرول (فقط در اسلاید اول) */
+        .scroll-hint {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1em;
+            color: #fff;
+            background: rgba(0,0,0,0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        /* تنظیمات تیترها و متون */
+        h2 {
+            font-size: 2.8em;
+            color: #1976d2;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+        h3 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        p {
+            font-size: 1.3em;
+            line-height: 1.7;
+        }
+        ul {
+            list-style-type: none;
+            padding-right: 0;
+        }
+        li {
+            font-size: 1.3em;
+            line-height: 1.9;
+            margin-bottom: 15px;
+            position: relative;
+            padding-right: 35px;
+        }
+        li::before {
+            content: '🔹';
+            position: absolute;
+            right: 0;
+            top: 2px;
+            color: #1976d2;
+            font-size: 1.1em;
+        }
+
+        /* استایل نام ابزارها */
+        code {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+            padding: 4px 9px;
+            border-radius: 7px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 1em;
+            direction: ltr;
+            display: inline-block;
+            margin: 2px;
+            border: 1px solid #bbdefb;
+        }
+
+        /* Logo Style */
+        .logo {
+            position: absolute;
+            bottom: 25px;
+            right: 40px;
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+        .logo:hover {
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body>
+
+    <main id="presentation-container">
+
+        <section class="slide slide-title">
+            <h1>هوش مصنوعی مولد</h1>
+            <p>مقدمه‌ای جامع بر مفاهیم، ابزارها و کاربردها</p>
+            <div class="scroll-hint">برای ادامه اسکرول کنید ▼</div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+        </section>
+
+        <section class="slide slide-content-full">
+            <h2>سرفصل‌های ارائه</h2>
+            <ul>
+                <li><strong>بخش ۱:</strong> مقدمه‌ای بر هوش مصنوعی (AI) و یادگیری ماشین (ML)</li>
+                <li><strong>بخش ۲:</strong> شناخت مدل‌های زبانی بزرگ (LLMs)</li>
+                <li><strong>بخش ۳:</strong> آشنایی با ابزارهای عمومی و سازمانی AI</li>
+                <li><strong>بخش ۴:</strong> مهندسی درخواست (Prompt Engineering)</li>
+                <li><strong>بخش ۵:</strong> ابزارهای تولید محتوای چندرسانه‌ای (تصویر، ویدئو، صوت)</li>
+                <li><strong>بخش ۶:</strong> اتوماسیون و گردش کار با هوش مصنوعی</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">2 / 50</div>
+        </section>
+
+        <section class="slide slide-divider">
+            <h2>بخش ۱: مقدمه‌ای بر هوش مصنوعی و یادگیری ماشین</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">3 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>هوش مصنوعی (AI) چیست؟</h2>
+                <p>شاخه‌ای از علوم کامپیوتر که به ساخت ماشین‌های هوشمندی می‌پردازد که می‌توانند وظایفی را انجام دهند که معمولاً به هوش انسانی نیاز دارند.</p>
+                <ul>
+                    <li>درک زبان طبیعی</li>
+                    <li>تشخیص الگوها و تصاویر</li>
+                    <li>تصمیم‌گیری و حل مسئله</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/ai.png"/>
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">4 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>یادگیری ماشین (ML) چیست؟</h2>
+                <p>زیرمجموعه‌ای از هوش مصنوعی است که به سیستم‌ها توانایی «یادگیری» از داده‌ها را می‌دهد، بدون اینکه به صراحت برای آن کار برنامه‌ریزی شده باشند.</p>
+                <p><strong>اصل کلیدی:</strong> به جای نوشتن قوانین، مدل از طریق مثال‌ها الگوها را یاد می‌گیرد.</p>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/ai_ml.png"/>
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">5 / 50</div>
+        </section>
+
+        <section class="slide slide-content-full">
+            <h2>تاریخچه مختصر و نقاط عطف</h2>
+            <ul>
+                <li><strong>۱۹۵۰:</strong> تست تورینگ (آلن تورینگ)</li>
+                <li><strong>۱۹۵۶:</strong> تولد رسمی "هوش مصنوعی" در کنفرانس دارتموث</li>
+                <li><strong>دهه ۱۹۸۰:</strong> دوران "زمستان هوش مصنوعی" (کاهش بودجه و علاقه)</li>
+                <li><strong>دهه ۱۹۹۰:</strong> پیروزی Deep Blue بر کاسپاروف (شطرنج)</li>
+                <li><strong>دهه ۲۰۱۰:</strong> انقلاب "یادگیری عمیق" (Deep Learning)</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">6 / 50</div>
+        </section>
+        
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>انواع مدل‌ها: ۱. یادگیری نظارت‌شده</h2>
+                <p>مدل با استفاده از داده‌های "برچسب‌گذاری شده" آموزش می‌بیند.</p>
+                <p><strong>مثال:</strong> به سیستم، هزاران عکس گربه (با برچسب "گربه") و سگ (با برچسب "سگ") نشان می‌دهیم تا یاد بگیرد عکس جدید را دسته‌بندی کند.</p>
+                <ul>
+                    <li>کاربرد: تشخیص اسپم، پیش‌بینی قیمت مسکن</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/supervised_learning.png"/>
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">7 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>انواع مدل‌ها: ۲. یادگیری نظارت‌نشده</h2>
+                <p>مدل تلاش می‌کند الگوها و ساختارهای پنهان را در داده‌های "بدون برچسب" پیدا کند.</p>
+                <p><strong>مثال:</strong> دسته‌بندی مشتریان یک فروشگاه به گروه‌های مختلف بر اساس رفتار خریدشان، بدون اینکه از قبل گروه‌ها را بشناسیم.</p>
+                <ul>
+                    <li>کاربرد: خوشه‌بندی (Clustering)، کاهش ابعاد</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/unsupervised_learning.png"/>
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">8 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>انواع مدل‌ها: ۳. یادگیری تقویتی</h2>
+                <p>مدل از طریق "آزمون و خطا" در یک محیط یاد می‌گیرد. بر اساس بازخورد (پاداش یا جریمه) رفتار خود را بهینه می‌کند.</p>
+                <p><strong>مثال:</strong> آموزش یک هوش مصنوعی برای بازی شطرنج؛ با هر برد "پاداش" و با هر باخت "جریمه" می‌گیرد.</p>
+                <ul>
+                    <li>کاربرد: رباتیک، بازی‌های کامپیوتری، خودروهای خودران</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/reinforcement.png"/>
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">9 / 50</div>
+        </section>
+
+        <section class="slide slide-divider">
+            <h2>بخش ۲: شناخت مدل‌های زبانی بزرگ (LLMs)</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">10 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>مدل زبانی بزرگ (LLM) چیست؟</h2>
+                <p>نوعی مدل هوش مصنوعی (بر پایه یادگیری عمیق) است که بر روی حجم عظیمی از داده‌های متنی آموزش دیده تا زبان انسان را درک کند، خلاصه کند، تولید کند و پیش‌بینی کند.</p>
+                <p>این مدل‌ها قلب تپنده ابزارهایی مانند <code>ChatGPT</code> هستند.</p>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/llm.png"/>
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">11 / 50</div>
+        </section>
+
+        <section class="slide slide-content-full">
+            <h2>LLM ها چگونه کار می‌کنند؟ (به زبان ساده)</h2>
+            <p>وظیفه اصلی آن‌ها: <strong>پیش‌بینی کلمه بعدی.</strong></p>
+            <p>وقتی شما می‌نویسید: «پایتخت فرانسه...»، مدل بر اساس میلیاردها متنی که خوانده، محاسبه می‌کند که محتمل‌ترین کلمه بعدی «پاریس» است.</p>
+            <ul>
+                <li>آن‌ها واقعاً متن را "درک" نمی‌کنند، بلکه الگوهای آماری بسیار پیچیده‌ای را یاد گرفته‌اند.</li>
+                <li>معماری اصلی آن‌ها "Transformer" نام دارد.</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">12 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>معرفی ابزار: <code>ChatGPT</code> (OpenAI)</h2>
+                <ul>
+                    <li>ابزاری که هوش مصنوعی مولد را به پدیده‌ای جهانی تبدیل کرد.</li>
+                    <li>بر پایه مدل‌های خانواده <code>GPT</code> (مانند GPT-3.5 و GPT-4).</li>
+                    <li>بسیار قوی در مکالمه، تولید کد، و نوشتن خلاقانه.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/chatgpt.png"/>
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">13 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>معرفی ابزار: <code>Gemini</code> (Google)</h2>
+                <ul>
+                    <li>نسل جدید مدل‌های هوش مصنوعی گوگل (جایگزین LaMDA و PaLM).</li>
+                    <li>طراحی شده به صورت "Multimodal" (چندوجهی) از پایه؛ یعنی به طور همزمان متن، تصویر، کد و صوت را درک می‌کند.</li>
+                    <li>موتور محرک چت‌بات Gemini و بسیاری از محصولات گوگل.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/gemini.jpg"/>
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">14 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>معرفی ابزار: <code>Claude</code> (Anthropic)</h2>
+                <ul>
+                    <li>رقیب جدی <code>ChatGPT</code> و <code>Gemini</code>.</li>
+                    <li>تمرکز ویژه بر "ایمنی" (AI Safety) و مکالمات اخلاقی‌تر.</li>
+                    <li>مشهور به داشتن "پنجره زمینه" (Context Window) بسیار بزرگ؛ یعنی می‌تواند اسناد بسیار طولانی (مانند یک کتاب کامل) را تحلیل کند.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/claude.jpg"/>
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">15 / 50</div>
+        </section>
+        
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>معرفی ابزار: <code>Copilot</code> (Microsoft)</h2>
+                <ul>
+                    <li>"دستیار هوش مصنوعی روزمره شما."</li>
+                    <li>محصول مایکروسافت که از مدل‌های پیشرفته OpenAI (مانند GPT-4) استفاده می‌کند.</li>
+                    <li>ادغام شده با موتور جستجوی <code>Bing</code> برای ارائه اطلاعات به‌روز و زنده از وب.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/copilot.jpg"/>
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">16 / 50</div>
+        </section>
+        
+        <section class="slide slide-divider">
+            <h2>بخش ۳: آشنایی با ابزارهای عمومی و سازمانی AI</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">17 / 50</div>
+        </section>
+
+        <section class="slide slide-content-full">
+            <h2>ابزارهای عمومی AI</h2>
+            <p>فراتر از ۴ ابزار اصلی، اکوسیستم گسترده‌ای از ابزارهای تخصصی‌تر در حال رشد است:</p>
+            <ul>
+                <li><strong>ابزارهای جستجوی مبتنی بر AI:</strong> برای پاسخ‌های دقیق و خلاصه‌شده.</li>
+                <li><strong>پلتفرم‌های agregator:</strong> دسترسی به چندین مدل در یک جا.</li>
+                <li><strong>دستیارهای سازمانی:</strong> هوش مصنوعی در نرم‌افزارهای کاری شما.</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">18 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>ابزار عمومی: <code>Perplexity AI</code></h2>
+                <ul>
+                    <li>یک "موتور پاسخ" (Answer Engine) مبتنی بر AI.</li>
+                    <li>ترکیبی از قدرت جستجوی وب و خلاصه‌سازی LLM.</li>
+                    <li>ایده‌آل برای تحقیق و دریافت پاسخ‌های مستند (همراه با ذکر منابع).</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/Perplexity-Logo.png">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">19 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>ابزار عمومی: <code>Poe</code> (by Quora)</h2>
+                <ul>
+                    <li>یک پلتفرم تجمیع‌کننده (Aggregator).</li>
+                    <li>به شما اجازه می‌دهد در یک رابط کاربری واحد، با مدل‌های مختلفی چت کنید.</li>
+                    <li>(مانند <code>ChatGPT</code>, <code>Claude</code>, <code>Gemini</code>, <code>Llama</code> و...)</li>
+                    <li>امکان ساخت چت‌بات‌های سفارشی را فراهم می‌کند.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/poe.png">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">20 / 50</div>
+        </section>
+        
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>ابزار عمومی: <code>HuggingChat</code></h2>
+                <ul>
+                    <li>ارائه شده توسط <code>Hugging Face</code> (بزرگترین پلتفرم مدل‌های AI متن‌باز).</li>
+                    <li>رابطی برای چت با بسیاری از مدل‌های زبانی متن‌باز (Open Source).</li>
+                    <li>گزینه‌ای عالی برای تجربه مدل‌هایی غیر از مدل‌های تجاری بزرگ.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/hf-inference-dark.png">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">21 / 50</div>
+        </section>
+
+        <section class="slide slide-content-full">
+            <h2>هوش مصنوعی در سازمان (Enterprise AI)</h2>
+            <p>ورود هوش مصنوعی به ابزارهایی که روزانه با آن‌ها کار می‌کنیم:</p>
+            <ul>
+                <li>خلاصه‌سازی ایمیل‌ها و جلسات</li>
+                <li>تهیه پیش‌نویس اسناد و ارائه‌ها</li>
+                <li>تحلیل داده‌ها در صفحات گسترده (Spreadsheets)</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">22 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>ابزار سازمانی: <code>Microsoft 365 Copilot</code></h2>
+                <ul>
+                    <li>دستیار هوش مصنوعی مایکروسافت در مجموعه Office.</li>
+                    <li>در <code>Word</code>: نوشتن پیش‌نویس متن.</li>
+                    <li>در <code>Excel</code>: تحلیل داده‌ها و ایجاد نمودار.</li>
+                    <li>در <code>PowerPoint</code>: ساخت اسلاید از روی متن.</li>
+                    <li>در <code>Teams</code>: خلاصه‌سازی جلسات ضبط شده.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/copilot_365.jpg">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">23 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>ابزار سازمانی: <code>Gemini for Google Workspace</code></h2>
+                <p>(نام قبلی: <code>Duet AI</code>)</p>
+                <ul>
+                    <li>دستیار هوش مصنوعی گوگل در مجموعه Workspace.</li>
+                    <li>در <code>Gmail</code>: نوشتن و خلاصه‌سازی ایمیل.</li>
+                    <li>در <code>Google Docs</code>: نوشتن و بازنویسی متن.</li>
+                    <li>در <code>Google Sheets</code>: تحلیل داده‌ها.</li>
+                    <li>در <code>Google Meet</code>: خلاصه‌سازی جلسه و ترجمه همزمان.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/gemini_workspace.jpg">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">24 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>ابزار سازمانی: <code>Notion AI</code></h2>
+                <ul>
+                    <li>دستیار هوش مصنوعی در دل ابزار مدیریت دانش <code>Notion</code>.</li>
+                    <li>بسیار قدرتمند در خلاصه‌سازی یادداشت‌ها.</li>
+                    <li>استخراج وظایف (Action Items) از متن جلسات.</li>
+                    <li>ایده‌پردازی و طوفان فکری (Brainstorming).</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/notion_ai.jpg">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">25 / 50</div>
+        </section>
+        
+        <section class="slide slide-divider">
+            <h2>بخش ۴: مهندسی درخواست (Prompt Engineering)</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">26 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>مهندسی درخواست چیست؟</h2>
+                <p>هنر و علم طراحی ورودی‌های (Prompts) دقیق، مؤثر و بهینه برای دریافت بهترین، مرتبط‌ترین و دقیق‌ترین خروجی ممکن از مدل‌های هوش مصنوعی مولد.</p>
+                <p><strong>به زبان ساده:</strong> یاد بگیریم چگونه با هوش مصنوعی "حرف بزنیم" تا جواب دلخواهمان را بگیریم.</p>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/what-is-prompt-engineering.webp">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">27 / 50</div>
+        </section>
+
+        <section class="slide slide-content-full">
+            <h2>چرا مهندسی درخواست اهمیت دارد؟</h2>
+            <p>کیفیت خروجی مستقیماً به کیفیت ورودی بستگی دارد. (Garbage In, Garbage Out)</p>
+            <ul>
+                <li><strong>درخواست ضعیف:</strong> "درباره بازاریابی بنویس." (خروجی: کلی و به درد نخور)</li>
+                <li><strong>درخواست قوی:</strong> "به عنوان یک استراتژیست بازاریابی، ۵ ایده نوآورانه برای کمپین اینستاگرام یک کافی‌شاپ محلی با بودجه محدود بنویس." (خروجی: دقیق و کاربردی)</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">28 / 50</div>
+        </section>
+        
+        <section class="slide slide-content-full">
+            <h2>اصول کلیدی: ۱. زمینه (Context) و شفافیت</h2>
+            <ul>
+                <li><strong>شفافیت:</strong> دقیقاً چه می‌خواهید؟ (خلاصه‌سازی، ترجمه، ایده‌پردازی، کدنویسی؟)</li>
+                <li><strong>زمینه:</strong> تمام اطلاعات پس‌زمینه‌ای که مدل برای انجام کارش نیاز دارد را ارائه دهید.</li>
+                <li><strong>مثال:</strong> به جای "این متن را بهتر کن"، بگویید: "این متن را برای مخاطب دانش‌آموز کلاس پنجم، ساده‌سازی کن."</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">29 / 50</div>
+        </section>
+        
+        <section class="slide slide-content-full">
+            <h2>اصول کلیدی: ۲. تعیین نقش (Persona)</h2>
+            <p>از مدل بخواهید نقش یک متخصص را بازی کند. این کار لحن و سطح تخصص خروجی را به شدت بهبود می‌بخشد.</p>
+            <ul>
+                <li>"تو یک <strong>وکیل حقوقی</strong> هستی. این بند قرارداد را تحلیل کن."</li>
+                <li>"تو یک <strong>کپی‌رایتر تبلیغاتی</strong> هستی. یک شعار برای این محصول بنویس."</li>
+                <li>"تو یک <strong>برنامه‌نویس ارشد پایتون</strong> هستی. این کد را بهینه کن."</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">30 / 50</div>
+        </section>
+        
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>تکنیک‌ها: Zero-Shot vs. Few-Shot</h2>
+                <ul>
+                    <li><strong>Zero-Shot:</strong> درخواست مستقیم بدون مثال. (مثال: "این جمله را به آلمانی ترجمه کن.")</li>
+                    <br>
+                    <li><strong>Few-Shot:</strong> ارائه چند مثال به مدل برای یادگیری الگو و تقلید از آن. (مثال: "لحن جملات زیر را از رسمی به دوستانه تغییر بده: <br> رسمی: ... / دوستانه: ... <br> رسمی: ... / دوستان..." <br> حالا این جمله را تغییر بده: ...)</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/few_shot.jpeg">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">31 / 50</div>
+        </section>
+
+        <section class="slide slide-divider">
+            <h2>بخش ۵: ابزارهای تولید محتوای چندرسانه‌ای</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">32 / 50</div>
+        </section>
+
+        <section class="slide slide-content-full">
+            <h2>تولید محتوا: تصویر (Text-to-Image)</h2>
+            <p>مدل‌های هوش مصنوعی که توضیحات متنی (Prompts) شما را به تصاویر بصری خیره‌کننده تبدیل می‌کنند.</p>
+            <p><strong>کاربردها:</strong> طراحی گرافیک، تولید محتوای شبکه‌های اجتماعی، ایده‌پردازی هنری، ساخت نمونه اولیه محصول.</p>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">33 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>ابزار تصویر: <code>Midjourney</code></h2>
+                <ul>
+                    <li>مشهورترین ابزار برای تولید تصاویر هنری (Artistic) و بسیار باکیفیت.</li>
+                    <li>نتایج آن اغلب سینمایی، فانتزی و بسیار خلاقانه است.</li>
+                    <li>فعلاً فقط از طریق پلتفرم <code>Discord</code> قابل استفاده است.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/More-Midjourney-Images.png">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">34 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>ابزار تصویر: <code>DALL·E 3</code> (OpenAI)</h2>
+                <ul>
+                    <li>مدل تولید تصویر OpenAI، خالق <code>ChatGPT</code>.</li>
+                    <li>ادغام شده در <code>ChatGPT Plus</code> و <code>Copilot</code>.</li>
+                    <li>نقطه قوت: درک بسیار دقیق پرامپت‌های طولانی و پیچیده، و توانایی عالی در تولید متن داخل تصاویر.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/dall-e3.png">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">35 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>ابزارهای تصویر: <code>Leonardo.ai</code> & <code>Adobe Firefly</code></h2>
+                <ul>
+                    <li><code>Leonardo.ai</code>: پلتفرمی محبوب با مدل‌های متنوع، بخصوص برای طراحی کاراکتر بازی و Asset.</li>
+                    <li><code>Adobe Firefly</code>: مدل تصویرسازی ادوبی، ادغام شده در <code>Photoshop</code>. تمرکز آن بر استفاده تجاری ایمن (Safe for Commercial Use) است.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/leonardo.png">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">36 / 50</div>
+        </section>
+        
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>ابزار تصویر: <code>Canva AI</code></h2>
+                <ul>
+                    <li>هوش مصنوعی مولد مستقیماً به ابزار محبوب طراحی <code>Canva</code> اضافه شده است.</li>
+                    <li>مجموعه‌ای از ابزارها به نام "Magic Studio".</li>
+                    <li>شامل تولید تصویر، ویرایش جادویی (Magic Edit)، و ساخت اسلاید از متن.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/canva.webp">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">37 / 50</div>
+        </section>
+        
+        <section class="slide slide-content-full">
+            <h2>تولید محتوا: ویدئو (Text-to-Video)</h2>
+            <p>حوزه بسیار نوظهور و هیجان‌انگیز هوش مصنوعی.</p>
+            <p>ابزارهایی که از متن یا تصویر، کلیپ‌های ویدئویی کوتاه تولید می‌کنند.</p>
+            <ul>
+                <li>(توجه: ابزارهایی مانند <code>Sora</code> از OpenAI هنوز به صورت عمومی منتشر نشده‌اند).</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">38 / 50</div>
+        </section>
+        
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>ابزارهای ویدئو: <code>Runway ML</code> & <code>Pika Labs</code></h2>
+                <ul>
+                    <li>دو مورد از در دسترس‌ترین و قوی‌ترین ابزارهای Text-to-Video در حال حاضر.</li>
+                    <li><code>Runway ML</code>: پیشگام در این فضا (Gen-2)، با ابزارهای ویرایش حرفه‌ای.</li>
+                    <li><code>Pika Labs</code>: رقیب جدی با تمرکز بر استفاده آسان و نتایج باکیفیت.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/PikaLabs-vs-Runway-ML.png">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">39 / 50</div>
+        </section>
+
+        <section class="slide slide-content-full">
+            <h2>تولید محتوا: صوت و صدا (Text-to-Speech)</h2>
+            <p>فراتر از صدای رباتیک؛ ابزارهای مدرن می‌توانند صداهایی بسیار طبیعی، احساسی و حتی شبیه‌سازی شده (Voice Cloning) تولید کنند.</p>
+            <p><strong>کاربردها:</strong> پادکست، کتاب صوتی، دوبله ویدئو، صدای دستیارهای مجازی.</p>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">40 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>ابزار صوت: <code>ElevenLabs</code></h2>
+                <ul>
+                    <li>رهبر بازار در تولید صدای واقع‌گرایانه (Realistic TTS).</li>
+                    <li>کیفیت بسیار بالا در شبیه‌سازی صدا (Voice Cloning) تنها با چند دقیقه نمونه صوتی.</li>
+                    <li>پشتیبانی از زبان‌های متعدد با لحن و احساسات.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/ElevenLabs_logo.png">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">41 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>ابزارهای ویدئو/صوت: <code>Synthesia</code> & <code>Descript</code></h2>
+                <ul>
+                    <li><code>Synthesia</code>: ساخت ویدئوهای آموزشی با استفاده از آواتارهای هوش مصنوعی و صدای TTS. (تولید ویدئو از متن).</li>
+                    <li><code>Descript</code>: ویرایشگر پادکست و ویدئو مبتنی بر متن. می‌توانید با ویرایش متن، فایل صوتی/تصویری را ویرایش کنید!</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/synthesia.jpeg">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">42 / 50</div>
+        </section>
+        
+        <section class="slide slide-divider">
+            <h2>بخش ۶: اتوماسیون با AI و ابزارهای Workflow</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">43 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>اتوماسیون گردش کار (Workflow)</h2>
+                <p>اتصال ابزارهای مختلف به یکدیگر برای ایجاد یک فرآیند خودکار.</p>
+                <p>هوش مصنوعی به عنوان "مغز" این اتوماسیون عمل می‌کند تا کارهای شناختی (مانند تصمیم‌گیری، خلاصه‌سازی، دسته‌بندی) را انجام دهد.</p>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/triger.png">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">44 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>ابزارهای No-Code: <code>Zapier</code> & <code>Make</code></h2>
+                <ul>
+                    <li>پلتفرم‌هایی که به شما اجازه می‌دهند هزاران اپلیکیشن را (مانند Gmail, Slack, Google Sheets, ChatGPT) بدون یک خط کدنویسی به هم متصل کنید.</li>
+                    <li><code>Zapier</code>: بسیار محبوب و ساده.</li>
+                    <li><code>Make (Integromat)</code>: بصری‌تر و قدرتمند برای سناریوهای پیچیده.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/zapier.webp">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">45 / 50</div>
+        </section>
+
+        <section class="slide slide-content-full">
+            <h2>مثال یک اتوماسیون AI</h2>
+            <ul>
+                <li><strong>۱. ماشه (Trigger):</strong> ایمیل جدیدی در Gmail با موضوع "درخواست پشتیبانی" دریافت می‌شود.</li>
+                <li><strong>۲. اقدام AI (توسط ChatGPT):</strong> محتوای ایمیل خوانده شده و به یکی از دسته‌های (فنی، فروش، مالی) دسته‌بندی می‌شود.</li>
+                <li><strong>۳. اقدام (Action):</strong> ایمیل به طور خودکار به کانال مربوطه در <code>Slack</code> ارسال شده و یک کارت در <code>Trello</code> ایجاد می‌شود.</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">46 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>ابزارهای Database-AI: <code>Airtable AI</code> / <code>Notion AI</code></h2>
+                <ul>
+                    <li>این ابزارها هوش مصنوعی را مستقیماً وارد دیتابیس‌های خود کرده‌اند.</li>
+                    <li><code>Airtable AI</code>: می‌توانید ستون‌هایی داشته باشید که به طور خودکار توسط AI پر می‌شوند (مثال: خلاصه‌سازی بازخورد مشتریان).</li>
+                    <li><code>Notion AI</code>: قابلیت پر کردن خودکار جداول بر اساس پرامپت.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/notion_zipper.png">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">47 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>راه‌حل‌های سفارشی: <code>Custom GPTs</code></h2>
+                <ul>
+                    <li>قابلیت <code>ChatGPT</code> برای ساخت نسخه‌های سفارشی از آن.</li>
+                    <li>می‌توانید به آن دانش اختصاصی (فایل‌های PDF، اسناد) و دستورالعمل‌های خاص بدهید.</li>
+                    <li><strong>GPT Actions:</strong> قابلیت اتصال <code>GPT</code> به <code>API</code> های خارجی (مانند سیستم CRM یا تقویم شما) برای انجام کارهای واقعی.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/custom_gpt.png">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">48 / 50</div>
+        </section>
+
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>نگاه به آینده: AI Agents</h2>
+                <p>گام بعدی پس از اتوماسیون، "عامل‌های هوشمند" (AI Agents) هستند.</p>
+                <p>عامل‌های خودکاری که می‌توانند اهداف پیچیده را دریافت کنند (مثال: "یک سفر به پاریس برای آخر هفته آینده رزرو کن") و تمام مراحل (بررسی پرواز، رزرو هتل، چک کردن آب و هوا) را به تنهایی انجام دهند.</p>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/mcp.webp">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">49 / 50</div>
+        </section>
+
+        <section class="slide slide-title">
+            <h1>متشکرم</h1>
+            <p>پرسش و پاسخ (Q&A)</p>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">50 / 50</div>
+        </section>
+
+    </main>
+
+</body>
+</html>

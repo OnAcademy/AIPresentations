@@ -1,57 +1,178 @@
-# Core AI/ML Libraries
-numpy>=1.21.0
-scipy>=1.7.0
-scikit-learn>=1.0.0
-pandas>=1.3.0
+# ============================================================================
+# COMPLETE REQUIREMENTS FOR AI PRESENTATIONS - ALL SECTIONS
+# ============================================================================
 
-# Deep Learning
-tensorflow>=2.10.0
-torch>=2.0.0
-torchvision>=0.15.0
+# CORE DEEP LEARNING FRAMEWORKS
+tensorflow>=2.13.0              # For neural networks, CNNs, RNNs, Transformers
+torch>=2.0.0                    # PyTorch alternative/complement
+torchvision>=0.15.0             # For computer vision tasks
 
-# Natural Language Processing
-transformers>=4.25.0
-huggingface-hub>=0.13.0
-nltk>=3.8.0
+# NATURAL LANGUAGE PROCESSING
+transformers>=4.30.0            # Hugging Face models (BERT, GPT, etc)
+tokenizers>=0.13.0              # Fast tokenizers
+nltk>=3.8.0                     # Natural Language Toolkit
+spacy>=3.5.0                    # Advanced NLP processing
+textblob>=0.17.0                # Simplified NLP
 
-# OpenAI & LLM APIs
-openai>=1.0.0
-anthropic>=0.7.0
-google-generativeai>=0.3.0
+# MACHINE LEARNING & DATA SCIENCE
+scikit-learn>=1.3.0             # Traditional ML algorithms
+pandas>=2.0.0                   # Data manipulation
+numpy>=1.24.0                   # Numerical computing
+scipy>=1.10.0                   # Scientific computing
 
-# Data Processing
-Pillow>=9.0.0
-opencv-python>=4.5.0
-matplotlib>=3.5.0
-plotly>=5.0.0
+# VISUALIZATION
+matplotlib>=3.7.0               # Plotting library
+seaborn>=0.12.0                 # Statistical visualization
+plotly>=5.15.0                  # Interactive plots
+pillow>=9.5.0                   # Image processing
 
-# Utilities
-requests>=2.28.0
-python-dotenv>=0.20.0
-pydantic>=1.10.0
-aiohttp>=3.8.0
+# API CLIENTS & INTEGRATIONS
+openai>=0.27.0                  # OpenAI API (ChatGPT, GPT-4)
+google-generativeai>=0.3.0      # Google Gemini API
+anthropic>=0.3.0                # Anthropic Claude API
+cohere>=4.20.0                  # Cohere API
 
-# No-Code Automation APIs
-airtable-python-wrapper>=0.15.0
-notion-client>=2.0.0
+# WEB & AUTOMATION
+requests>=2.31.0                # HTTP requests
+flask>=2.3.0                    # Web framework
+fastapi>=0.100.0                # Modern web framework
+uvicorn>=0.23.0                 # ASGI server
+python-dotenv>=1.0.0            # Environment variables
+aiohttp>=3.8.0                  # Async HTTP
 
-# Database
-sqlalchemy>=1.4.0
-psycopg2-binary>=2.9.0
+# AUDIO & SPEECH
+librosa>=0.10.0                 # Audio analysis
+soundfile>=0.12.0               # Audio I/O
+pydub>=0.25.0                   # Audio processing
 
-# Testing
-pytest>=7.0.0
-pytest-cov>=4.0.0
+# VIDEO & IMAGES
+opencv-python>=4.8.0            # Computer vision
+imageio>=2.25.0                 # Image I/O
 
-# Visualization
-jupyter>=1.0.0
-ipython>=8.0.0
+# REINFORCEMENT LEARNING
+gymnasium>=0.27.0               # RL environment (replacement for gym)
+stable-baselines3>=2.0.0        # RL algorithms
 
-# Optional: GPU support
-# tensorflow-gpu>=2.10.0
-# torch-cuda (install via conda instead)
+# UTILITIES & TOOLS
+tqdm>=4.66.0                    # Progress bars
+joblib>=1.3.0                   # Parallel computing
+typing-extensions>=4.7.0        # Type hints
+pydantic>=2.0.0                 # Data validation
 
-# Optional: Advanced
-optuna>=3.0.0  # Hyperparameter optimization
-wandb>=0.13.0  # Experiment tracking
+# JUPYTER & NOTEBOOKS
+jupyter>=1.0.0                  # Jupyter notebook
+jupyterlab>=4.0.0               # JupyterLab interface
+ipython>=8.14.0                 # Enhanced Python shell
+ipywidgets>=8.1.0               # Interactive widgets
 
+# TESTING & DEVELOPMENT
+pytest>=7.4.0                   # Testing framework
+black>=23.9.0                   # Code formatter
+pylint>=2.17.0                  # Code linter
+mypy>=1.5.0                     # Type checker
+
+# OPTIMIZATION & PERFORMANCE
+onnx>=1.14.0                    # Model serialization
+onnxruntime>=1.16.0             # ONNX runtime
+tensorrt>=8.6.0                 # NVIDIA TensorRT (optional, for inference)
+
+# DOCUMENT & FILE HANDLING
+python-pptx>=0.6.21             # PowerPoint generation
+python-docx>=0.8.11             # Word document handling
+openpyxl>=3.1.0                 # Excel file handling
+
+# VERSION CONTROL & REPRODUCIBILITY
+dvc>=3.0.0                      # Data version control (optional)
+mlflow>=2.7.0                   # Experiment tracking (optional)
+
+# GPU SUPPORT (Optional - Install separately if needed)
+# tensorflow[and-cuda]>=2.13.0  # TensorFlow with CUDA support
+# torch --index-url https://download.pytorch.org/whl/cu118  # PyTorch with CUDA
+
+# ============================================================================
+# INSTALLATION INSTRUCTIONS
+# ============================================================================
+# 
+# 1. Create virtual environment:
+#    python -m venv venv
+#    source venv/bin/activate        # Linux/Mac
+#    venv\Scripts\activate            # Windows
+#
+# 2. Upgrade pip:
+#    pip install --upgrade pip setuptools wheel
+#
+# 3. Install all requirements:
+#    pip install -r requirements.txt
+#
+# 4. For GPU support (optional, requires NVIDIA CUDA toolkit):
+#    # Install CUDA toolkit first from NVIDIA website
+#    pip install tensorflow[and-cuda]
+#    # OR for PyTorch:
+#    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+#
+# 5. Verify installation:
+#    python -c "import tensorflow as tf; print(tf.__version__)"
+#    python -c "import torch; print(torch.__version__)"
+#    python -c "import transformers; print(transformers.__version__)"
+#
+# ============================================================================
+# MINIMAL INSTALLATION (Essential Only)
+# ============================================================================
+#
+# If you have storage/bandwidth constraints, install minimal set:
+# 
+# pip install numpy pandas scikit-learn matplotlib
+# pip install tensorflow transformers
+# pip install openai requests
+# 
+# ============================================================================
+# SECTION-SPECIFIC INSTALLATIONS
+# ============================================================================
+#
+# 1_fundamentals:
+#   pip install numpy pandas scikit-learn matplotlib seaborn
+#
+# 2_deep_learning:
+#   pip install tensorflow torch numpy matplotlib
+#
+# 3_cnns:
+#   pip install tensorflow torch opencv-python pillow
+#
+# 4_rnns_lstms:
+#   pip install tensorflow torch transformers
+#
+# 5_generative_models:
+#   pip install tensorflow torch pillow matplotlib
+#
+# 6_transformers:
+#   pip install transformers torch tensorflow
+#
+# 8_large_language_models:
+#   pip install openai anthropic google-generativeai cohere requests
+#
+# 9_prompt_engineering:
+#   pip install openai anthropic google-generativeai
+#
+# 13_automation_workflows:
+#   pip install requests flask fastapi aiohttp python-dotenv
+#
+# ============================================================================
+# COMMON ISSUES & SOLUTIONS
+# ============================================================================
+#
+# Issue: "ModuleNotFoundError: No module named 'tensorflow'"
+# Solution: pip install tensorflow
+#
+# Issue: CUDA compatibility errors
+# Solution: Check NVIDIA Driver version, install matching CUDA toolkit
+#
+# Issue: Out of memory
+# Solution: Reduce batch size in code, use CPU instead of GPU
+#
+# Issue: Slow pip install
+# Solution: Use pip install -r requirements.txt --no-cache-dir
+#
+# Issue: Permission denied during install
+# Solution: Use --user flag: pip install --user -r requirements.txt
+#
+# ============================================================================

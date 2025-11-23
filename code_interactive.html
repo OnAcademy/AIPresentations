@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Presentations - Code Examples Navigator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: slideDown 0.6s ease-out;
+        }
+        
+        h1 {
+            font-size: 3em;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: slideUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+        .card:nth-child(6) { animation-delay: 0.6s; }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .card-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+        
+        .card-content {
+            border-top: 2px solid #f0f0f0;
+            padding-top: 15px;
+        }
+        
+        .topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .topic {
+            background: #f5f7fa;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            color: #667eea;
+            border: 1px solid #ddd;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: white;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .breadcrumb {
+            background: rgba(255,255,255,0.1);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            color: white;
+            font-size: 0.95em;
+        }
+        
+        .breadcrumb a {
+            color: #fff;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            padding: 30px;
+            opacity: 0.9;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .status.complete {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .status.partial {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .status.todo {
+            background: #f44336;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 AI Presentations</h1>
+            <p class="subtitle">Complete Code Examples for Deep Learning & Generative AI</p>
+        </header>
+        
+        <div class="breadcrumb">
+            📍 <strong>Home</strong> → Code Examples Navigator
+        </div>
+        
+        <!-- Section 1: Fundamentals -->
+        <div class="section">
+            <h2 class="section-title">📚 Section 1: Fundamentals</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">📊</span>
+                        <h3 class="card-title">Supervised Learning</h3>
+                    </div>
+                    <div class="card-description">
+                        Classification and Regression using Scikit-learn, including real-world examples and best practices.
+                    </div>
+                    <div class="card-content">
+                        <div class="topics">
+                            <span class="topic">Classification</span>
+                            <span class="topic">Regression</span>
+                            <span class="topic">Scikit-learn</span>
+                        </div>
+                        <div class="buttons">
+                            <a href="AIPresentations/code_examples/1_fundamentals/supervised_learning.py" class="btn btn-primary">View Code</a>
+                            <a href="AIPresentations/code_examples/1_fundamentals/README.md" class="btn btn-secondary">Guide</a>
+                        </div>
+                        <span class="status complete">✓ Complete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section 2: Deep Learning -->
+        <div class="section">
+            <h2 class="section-title">🧠 Section 2: Deep Learning</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🔗</span>
+                        <h3 class="card-title">Neural Networks</h3>
+                    </div>
+                    <div class="card-description">
+                        Comprehensive guide to neural networks: architecture, training, and backpropagation using TensorFlow/Keras.
+                    </div>
+                    <div class="card-content">
+                        <div class="topics">
+                            <span class="topic">MLP</span>
+                            <span class="topic">Backprop</span>
+                            <span class="topic">MNIST</span>
+                        </div>
+                        <div class="buttons">
+                            <a href="AIPresentations/code_examples/2_deep_learning/tensorflow_mnist.py" class="btn btn-primary">View Code</a>
+                            <a href="AIPresentations/code_examples/2_deep_learning/README.md" class="btn btn-secondary">Guide</a>
+                        </div>
+                        <span class="status complete">✓ Complete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section 3: CNNs -->
+        <div class="section">
+            <h2 class="section-title">👁️ Section 3: Convolutional Neural Networks</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🖼️</span>
+                        <h3 class="card-title">Image Classification</h3>
+                    </div>
+                    <div class="card-description">
+                        Complete CNN implementation: convolution operations, architectures (AlexNet, ResNet), transfer learning, and applications.
+                    </div>
+                    <div class="card-content">
+                        <div class="topics">
+                            <span class="topic">Convolution</span>
+                            <span class="topic">Pooling</span>
+                            <span class="topic">ResNet</span>
+                            <span class="topic">Transfer Learning</span>
+                        </div>
+                        <div class="buttons">
+                            <a href="AIPresentations/code_examples/3_cnns/cnn_image_classification.py" class="btn btn-primary">View Code</a>
+                            <a href="AIPresentations/code_examples/3_cnns/README.md" class="btn btn-secondary">Guide</a>
+                        </div>
+                        <span class="status complete">✓ Complete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section 4: RNNs & LSTMs -->
+        <div class="section">
+            <h2 class="section-title">🔄 Section 4: Recurrent Neural Networks & LSTMs</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">⏱️</span>
+                        <h3 class="card-title">Sequence Modeling</h3>
+                    </div>
+                    <div class="card-description">
+                        Complete RNN/LSTM guide: sequence processing, vanishing gradient, LSTM architecture, bidirectional RNNs, and NLP applications.
+                    </div>
+                    <div class="card-content">
+                        <div class="topics">
+                            <span class="topic">RNN Basics</span>
+                            <span class="topic">LSTM</span>
+                            <span class="topic">GRU</span>
+                            <span class="topic">Sequences</span>
+                        </div>
+                        <div class="buttons">
+                            <a href="AIPresentations/code_examples/4_rnns_lstms/lstm_sequence_modeling.py" class="btn btn-primary">View Code</a>
+                            <a href="AIPresentations/code_examples/4_rnns_lstms/README.md" class="btn btn-secondary">Guide</a>
+                        </div>
+                        <span class="status complete">✓ Complete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section 5: Generative Models -->
+        <div class="section">
+            <h2 class="section-title">🎨 Section 5: Generative Models</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🤖</span>
+                        <h3 class="card-title">GANs & VAEs</h3>
+                    </div>
+                    <div class="card-description">
+                        Complete guide to GANs, VAEs, and Diffusion Models: architectures, training dynamics, applications, and comparisons.
+                    </div>
+                    <div class="card-content">
+                        <div class="topics">
+                            <span class="topic">GAN</span>
+                            <span class="topic">VAE</span>
+                            <span class="topic">Diffusion</span>
+                            <span class="topic">Generation</span>
+                        </div>
+                        <div class="buttons">
+                            <a href="AIPresentations/code_examples/5_generative_models/gan_vae_diffusion.py" class="btn btn-primary">View Code</a>
+                            <a href="AIPresentations/code_examples/5_generative_models/README.md" class="btn btn-secondary">Guide</a>
+                        </div>
+                        <span class="status complete">✓ Complete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section 6: Transformers -->
+        <div class="section">
+            <h2 class="section-title">⚡ Section 6: Transformers</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🔍</span>
+                        <h3 class="card-title">Attention & Transformers</h3>
+                    </div>
+                    <div class="card-description">
+                        Deep dive into Transformers: attention mechanism, multi-head attention, architecture, famous models (BERT, GPT), and efficiency.
+                    </div>
+                    <div class="card-content">
+                        <div class="topics">
+                            <span class="topic">Attention</span>
+                            <span class="topic">Transformer</span>
+                            <span class="topic">BERT</span>
+                            <span class="topic">GPT</span>
+                        </div>
+                        <div class="buttons">
+                            <a href="AIPresentations/code_examples/6_transformers/transformer_architecture.py" class="btn btn-primary">View Code</a>
+                            <a href="AIPresentations/code_examples/6_transformers/README.md" class="btn btn-secondary">Guide</a>
+                        </div>
+                        <span class="status complete">✓ Complete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section 7: Diffusion Models -->
+        <div class="section">
+            <h2 class="section-title">✨ Section 7: Diffusion Models</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🌟</span>
+                        <h3 class="card-title">State-of-the-Art Generation</h3>
+                    </div>
+                    <div class="card-description">
+                        Comprehensive guide to Diffusion Models: forward/reverse process, training, DDIM, latent diffusion, and SOTA applications.
+                    </div>
+                    <div class="card-content">
+                        <div class="topics">
+                            <span class="topic">Diffusion</span>
+                            <span class="topic">DDIM</span>
+                            <span class="topic">DALL-E</span>
+                            <span class="topic">Stable Diffusion</span>
+                        </div>
+                        <div class="buttons">
+                            <a href="AIPresentations/code_examples/7_diffusion_models/README.md" class="btn btn-primary">Guide</a>
+                            <a href="AIPresentations/code_examples/5_generative_models/gan_vae_diffusion.py" class="btn btn-secondary">Related Code</a>
+                        </div>
+                        <span class="status partial">📖 Documentation</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section 8: LLMs -->
+        <div class="section">
+            <h2 class="section-title">💬 Section 8: Large Language Models</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🗣️</span>
+                        <h3 class="card-title">LLMs & APIs</h3>
+                    </div>
+                    <div class="card-description">
+                        Complete LLM guide: using OpenAI API, GPT models, prompt engineering basics, and practical applications.
+                    </div>
+                    <div class="card-content">
+                        <div class="topics">
+                            <span class="topic">LLM</span>
+                            <span class="topic">GPT</span>
+                            <span class="topic">OpenAI</span>
+                            <span class="topic">API</span>
+                        </div>
+                        <div class="buttons">
+                            <a href="AIPresentations/openai_api_example.py" class="btn btn-primary">View Code</a>
+                            <a href="AIPresentations/code_examples/8_large_language_models/README.md" class="btn btn-secondary">Guide</a>
+                        </div>
+                        <span class="status complete">✓ Complete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section 9: Prompt Engineering -->
+        <div class="section">
+            <h2 class="section-title">✍️ Section 9: Prompt Engineering</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🎯</span>
+                        <h3 class="card-title">Prompt Techniques</h3>
+                    </div>
+                    <div class="card-description">
+                        Master prompt engineering: quality levels, personas, few-shot learning, chain-of-thought, and best practices.
+                    </div>
+                    <div class="card-content">
+                        <div class="topics">
+                            <span class="topic">Prompting</span>
+                            <span class="topic">Few-shot</span>
+                            <span class="topic">CoT</span>
+                            <span class="topic">Techniques</span>
+                        </div>
+                        <div class="buttons">
+                            <a href="AIPresentations/basic_prompts.py" class="btn btn-primary">View Code</a>
+                            <a href="AIPresentations/code_examples/9_prompt_engineering/README.md" class="btn btn-secondary">Guide</a>
+                        </div>
+                        <span class="status complete">✓ Complete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section 13: Automation -->
+        <div class="section">
+            <h2 class="section-title">🤖 Section 13: Automation & Workflows</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">⚙️</span>
+                        <h3 class="card-title">Workflow Automation</h3>
+                    </div>
+                    <div class="card-description">
+                        Build intelligent workflows: webhook automation, API integration, and autonomous agents using AI.
+                    </div>
+                    <div class="card-content">
+                        <div class="topics">
+                            <span class="topic">Webhooks</span>
+                            <span class="topic">Automation</span>
+                            <span class="topic">APIs</span>
+                            <span class="topic">Workflows</span>
+                        </div>
+                        <div class="buttons">
+                            <a href="AIPresentations/code_examples/13_automation_workflows/webhook_automation.py" class="btn btn-primary">View Code</a>
+                            <a href="AIPresentations/code_examples/13_automation_workflows/README.md" class="btn btn-secondary">Guide</a>
+                        </div>
+                        <span class="status complete">✓ Complete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Start Section -->
+        <div class="section">
+            <h2 class="section-title">⚡ Quick Start</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">📖</span>
+                        <h3 class="card-title">Getting Started</h3>
+                    </div>
+                    <div class="card-description">
+                        New to this project? Start here with step-by-step instructions, setup guide, and recommended learning paths.
+                    </div>
+                    <div class="card-content">
+                        <div class="buttons">
+                            <a href="AIPresentations/code_examples/QUICK_START.md" class="btn btn-primary">Quick Start</a>
+                            <a href="AIPresentations/code_examples/GETTING_STARTED.md" class="btn btn-secondary">Full Guide</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">📋</span>
+                        <h3 class="card-title">Learning Paths</h3>
+                    </div>
+                    <div class="card-description">
+                        Choose your learning path based on your goals: fundamentals, LLMs, generative AI, or full stack.
+                    </div>
+                    <div class="card-content">
+                        <div class="buttons">
+                            <a href="AIPresentations/code_examples/INDEX.md" class="btn btn-primary">View Paths</a>
+                            <a href="AIPresentations/README.md" class="btn btn-secondary">Overview</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">📦</span>
+                        <h3 class="card-title">Installation</h3>
+                    </div>
+                    <div class="card-description">
+                        Install all dependencies and set up your environment for running all code examples.
+                    </div>
+                    <div class="card-content">
+                        <div class="buttons">
+                            <a href="AIPresentations/code_examples/requirements.txt" class="btn btn-primary">Requirements</a>
+                            <a href="AIPresentations/INSTALLATION_GUIDE.md" class="btn btn-secondary">Setup Guide</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Presentations -->
+        <div class="section">
+            <h2 class="section-title">📊 HTML Presentations</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🎓</span>
+                        <h3 class="card-title">Deep Learning Revolution</h3>
+                    </div>
+                    <div class="card-description">
+                        37-slide interactive presentation covering DNNs, CNNs, RNNs, GANs, Transformers, Diffusion, and more.
+                    </div>
+                    <div class="card-content">
+                        <div class="topics">
+                            <span class="topic">37 Slides</span>
+                            <span class="topic">Farsi</span>
+                            <span class="topic">Scroll-based</span>
+                        </div>
+                        <div class="buttons">
+                            <a href="application.html" class="btn btn-primary">View Presentation</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🚀</span>
+                        <h3 class="card-title">Generative AI Complete</h3>
+                    </div>
+                    <div class="card-description">
+                        50-slide presentation on Generative AI: LLMs, Prompt Engineering, Tools, Multimodal, Automation, and Ethics.
+                    </div>
+                    <div class="card-content">
+                        <div class="topics">
+                            <span class="topic">50 Slides</span>
+                            <span class="topic">Farsi</span>
+                            <span class="topic">Scroll-based</span>
+                        </div>
+                        <div class="buttons">
+                            <a href="presentation.html" class="btn btn-primary">View Presentation</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>&copy; 2024 IROST AI Presentations | Complete AI Learning Resource</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                📚 <strong>14 Sections</strong> | 60+ Python Files | 150+ Concepts | 10,000+ Lines of Code
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
+

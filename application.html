@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>انقلاب یادگیری عمیق</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Base settings */
+        html {
+            overflow: hidden; /* Prevents default browser scrollbar */
+        }
+
+        body {
+            font-family: Tahoma, "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #111; /* Dark background for space between slides */
+            color: #333;
+        }
+
+        /* Main slide container */
+        #presentation-container {
+            width: 100vw; /* 100% viewport width */
+            height: 100vh; /* 100% viewport height */
+            overflow-y: scroll; /* Enable vertical scrolling */
+            /* Full-page slide magic */
+            scroll-snap-type: y mandatory; 
+        }
+
+        /* Base style for every slide */
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 80px;
+            box-sizing: border-box; /* Ensures padding doesn't break layout */
+            scroll-snap-align: start; /* Each slide snaps to the top */
+            position: relative;
+            background-color: #f5f7fa; /* Default light background */
+        }
+
+        /* Title Slide Style (First and Last) */
+        .slide-title {
+            background-color: #0d47a1; /* Dark Blue */
+            color: #ffffff;
+            text-align: center;
+        }
+        .slide-title h1 {
+            font-size: 4.5em;
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+        .slide-title p {
+            font-size: 1.8em;
+            color: #bbdefb;
+        }
+
+        /* Section Divider Slide Style */
+        .slide-divider {
+            background-color: #1a237e; /* Indigo */
+            color: #ffffff;
+            text-align: center;
+        }
+        .slide-divider h2 {
+            font-size: 3.5em;
+            font-weight: 700;
+            border-bottom: 3px solid #534bae;
+            padding-bottom: 20px;
+        }
+
+        /* Content Slide Style (Two-Column) */
+        .slide-content {
+            display: grid;
+            grid-template-columns: 55% 45%; /* Split screen */
+            align-items: center;
+            gap: 40px;
+            width: 100%;
+        }
+
+        /* Content Slide Style (Full-Width) */
+        .slide-content-full {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start; /* RTL adjustment */
+            width: 100%;
+        }
+
+        .content-text {
+            /* This section holds the text content */
+        }
+        
+        /* Image/Graph Placeholder Style */
+        .media-placeholder {
+            display: inline-block; /* fit tightly around image */
+            background-color: #e3f2fd; /* light blue */
+            border: 3px dashed #1976d2; /* blue border */
+            border-radius: 15px;
+            padding: 10px; /* small inner space around image */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            max-width: 100%;
+        }
+        .media-placeholder img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            display: block;
+        }
+
+        /* Slide Number */
+        .slide-number {
+            position: absolute;
+            bottom: 25px;
+            left: 40px; /* RTL adjustment */
+            font-size: 1.2em;
+            color: #777;
+            direction: ltr;
+        }
+        .slide-title .slide-number, .slide-divider .slide-number {
+            color: #eee;
+        }
+
+
+        /* Scroll Hint (First slide only) */
+        .scroll-hint {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1em;
+            color: #fff;
+            background: rgba(0,0,0,0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        /* Typography */
+        h2 {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #1976d2;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+        h3 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        p {
+            font-size: 1.3em;
+            line-height: 1.7;
+        }
+        ul {
+            list-style-type: none;
+            padding-right: 0; /* RTL adjustment */
+        }
+        li {
+            font-size: 1.3em;
+            line-height: 1.9;
+            margin-bottom: 15px;
+            position: relative;
+            padding-right: 35px; /* RTL adjustment */
+        }
+        li::before {
+            content: '🔹';
+            position: absolute;
+            right: 0; /* RTL adjustment */
+            top: 2px;
+            color: #1976d2;
+            font-size: 1.1em;
+        }
+
+        /* Style for tool names/acronyms */
+        code {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+            padding: 4px 9px;
+            border-radius: 7px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 1em;
+            display: inline-block;
+            margin: 2px;
+            border: 1px solid #bbdefb;
+            direction: ltr;
+        }
+
+        /* Logo Style */
+        .logo {
+            position: absolute;
+            bottom: 25px;
+            right: 40px; /* RTL adjustment */
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+        .logo:hover {
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body>
+
+    <main id="presentation-container">
+
+        <!-- Slide 1: Title -->
+        <section class="slide slide-title">
+            <h1>انقلاب یادگیری عمیق</h1>
+            <p>سفری در دنیای شبکه‌های عصبی عمیق (DNNs)</p>
+            <div class="scroll-hint">برای شروع به پایین اسکرول کنید ▼</div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">1 / 37</div>
+        </section>
+
+        <!-- Slide 2: 1.1 What Are DNNs? -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>شبکه‌های عصبی عمیق (DNN) چه هستند؟</h2>
+                <p>دسته‌ای از مدل‌های یادگیری ماشین که از ساختار مغز انسان الهام گرفته‌اند. "عمیق" به داشتن چندین لایه (ده‌ها، صدها یا حتی هزاران) بین ورودی و خروجی اشاره دارد.</p>
+                <ul>
+                    <li>آن‌ها الگوهای پیچیده را از حجم عظیمی از داده‌ها یاد می‌گیرند.</li>
+                    <li>آن‌ها ویژگی‌ها را به‌طور خودکار یاد می‌گیرند و مهندسی ویژگی دستی را حذف می‌کنند.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/DNN.jpg" alt="Diagram of a Deep Neural Network">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">2 / 37</div>
+        </section>
+
+        <!-- Slide 3: 1.2 Evolution Timeline -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>جدول زمانی تکامل</h2>
+                <p>مفاهیم طی دهه‌ها تکامل یافته‌اند و پیشرفت‌های اخیر این روند را تسریع کرده است.</p>
+                <ul>
+                    <li><code>Perceptron</code> (۱۹۵۷) - "اولین" شبکه عصبی.</li>
+                    <li><code>MLP</code> (دهه ۱۹۸۰) - پرسپترون چندلایه.</li>
+                    <li><code>CNN</code> (دهه ۱۹۹۰) - شبکه‌های عصبی کانولوشنی برای بینایی.</li>
+                    <li><code>RNN/LSTM</code> (دهه ۱۹۹۰) - برای داده‌های ترتیبی.</li>
+                    <li><code>GAN</code> (۲۰۱۴) - شبکه‌های مولد متخاصم.</li>
+                    <li><code>Transformer</code> (۲۰۱۷) - "توجه تمام آن چیزی است که نیاز دارید."</li>
+                    <li><code>Diffusion</code> (دهه ۲۰۲۰) - پیشرفته‌ترین مدل تولید تصویر.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/evaluation.png" alt="Evolution Timeline Chart">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">3 / 37</div>
+        </section>
+
+        <!-- Slide 4: 1.3 Applications -->
+        <section class="slide slide-content-full">
+            <h2>کاربردها در صنایع مختلف</h2>
+            <ul>
+                <li><strong>سرگرمی:</strong> سیستم توصیه‌گر <code>Netflix</code></li>
+                <li><strong>فناوری مصرفی:</strong> برچسب‌گذاری خودکار <code>Google Photos</code></li>
+                <li><strong>دستیارها:</strong> تشخیص گفتار <code>Siri</code> / <code>Google Assistant</code></li>
+                <li><strong>خودروهای خودران:</strong> سیستم بینایی <code>Tesla Autopilot</code></li>
+                <li><strong>علم:</strong> پیش‌بینی تاخوردگی پروتئین <code>DeepMind AlphaFold</code></li>
+                <li><strong>پزشکی:</strong> تشخیص پزشکی (مثلاً تشخیص سرطان در اسکن‌ها)</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">4 / 37</div>
+        </section>
+
+        <!-- Slide 5: Divider - Fundamentals -->
+        <section class="slide slide-divider">
+            <h2>۲. مبانی شبکه‌های عصبی</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">5 / 37</div>
+        </section>
+
+        <!-- Slide 6: Fundamentals -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>مفاهیم اصلی</h2>
+                <p>واحدهای سازنده اساسی همه شبکه‌های عصبی.</p>
+                <ul>
+                    <li><strong>نرون‌ها:</strong> واحد محاسباتی پایه.</li>
+                    <li><strong>لایه‌ها:</strong> پشته‌هایی از نرون‌ها (ورودی، پنهان، خروجی).</li>
+                    <li><strong>وزن‌ها و بایاس‌ها:</strong> پارامترهای قابل آموزشی که مدل "یاد می‌گیرد".</li>
+                    <li><strong>تابع فعال‌سازی:</strong> عدم خطی بودن را معرفی می‌کند (مانند <code>ReLU</code>).</li>
+                    <li><strong>پس‌انتشار (Backpropagation):</strong> الگوریتم مورد استفاده برای آموزش شبکه.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/single_neuron.png" alt="Diagram of a Single Neuron">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">6 / 37</div>
+        </section>
+
+        <!-- Slide 7: Divider - CNNs -->
+        <section class="slide slide-divider">
+            <h2>۳. شبکه‌های عصبی کانولوشنی (CNNs)</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">7 / 37</div>
+        </section>
+
+        <!-- Slide 8: 3.1 Why CNNs -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>چرا CNN برای بینایی؟</h2>
+                <p>شبکه‌های سنتی (MLPs) با تصاویر مشکل دارند زیرا پارامترهای زیادی دارند.</p>
+                <p>CNN ها برای داده‌های شبکه‌ای (مانند تصاویر) تخصصی هستند و از دو ایده هوشمندانه استفاده می‌کنند:</p>
+                <ul>
+                    <li><strong>سلسله مراتب فضایی:</strong> ابتدا ویژگی‌های ساده (لبه‌ها) را یاد می‌گیرند، سپس آن‌ها را به ویژگی‌های پیچیده (اشکال، اشیاء) ترکیب می‌کنند.</li>
+                    <li><strong>اشتراک پارامتر:</strong> یک "فیلتر" (مثلاً یک آشکارساز لبه) در سراسر تصویر استفاده می‌شود.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/cnn_arch.png" alt="Image Feature Detection">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">8 / 37</div>
+        </section>
+
+        <!-- Slide 9: 3.2 Key Blocks -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>بلوک‌های سازنده کلیدی</h2>
+                <ul>
+                    <li><strong>لایه کانولوشن:</strong> فیلترها (کرنل‌ها) را برای ایجاد نقشه‌های ویژگی به تصویر اعمال می‌کند.</li>
+                    <li><strong>لایه ادغام (Pooling):</strong> نقشه‌های ویژگی را نمونه‌برداری کاهشی (Down-sample) می‌کند، اندازه را کاهش می‌دهد و مدل را قوی‌تر می‌کند.</li>
+                    <li><strong>لایه تماماً متصل (Fully-Connected):</strong> لایه‌های نهایی که بر اساس ویژگی‌های آموخته‌شده، طبقه‌بندی را انجام می‌دهند.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/cnn_arch2.png" alt="CNN Architecture Diagram">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">9 / 37</div>
+        </section>
+
+        <!-- Slide 10: 3.3 AlexNet -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>نقطه عطف تاریخی: AlexNet (۲۰۱۲)</h2>
+                <p>مدلی که با بردن رقابت ImageNet با اختلاف بسیار زیاد، رونق یادگیری عمیق را آغاز کرد.</p>
+                <ul>
+                    <li>ثابت کرد که CNN های "عمیق" می‌توانند از بینایی کامپیوتر سنتی بهتر عمل کنند.</li>
+                    <li>استفاده از GPU ها را برای آموزش رایج کرد.</li>
+                    <li>از تابع فعال‌سازی <code>ReLU</code> استفاده کرد.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/alexnet.png" alt="ImageNet Error Rate Graph">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">10 / 37</div>
+        </section>
+
+        <!-- Slide 11: 3.4 Modern CNNs -->
+        <section class="slide slide-content-full">
+            <h2>مدل‌های مدرن CNN</h2>
+            <ul>
+                <li><strong><code>ResNet</code> (شبکه‌های باقی‌مانده):</strong> مشکل "محو شدگی گرادیان" را با استفاده از "اتصالات پرشی" حل کرد و امکان ایجاد شبکه‌های بسیار عمیق‌تر (مثلاً ۱۵۲ لایه) را فراهم کرد. برنده ImageNet 2015.</li>
+                <li><strong><code>EfficientNet</code> (تحقیقات گوگل):</strong> تعادل بهینه‌ای بین عمق، عرض و وضوح شبکه پیدا کرد و مدل‌های بسیار دقیق و کارآمدی ایجاد کرد.</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">11 / 37</div>
+        </section>
+
+        <!-- Slide 12: 3.5 CNN Apps -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>کاربردهای مبتنی بر CNN</h2>
+                <ul>
+                    <li><strong><code>YOLO</code> (You Only Look Once):</strong> تشخیص اشیاء در زمان واقعی.</li>
+                    <li><strong><code>FaceID</code> اپل:</strong> تشخیص چهره امن.</li>
+                    <li><strong>Google Lens:</strong> جستجوی بصری.</li>
+                    <li><strong>تحلیل تصویر پزشکی:</strong> تشخیص تومور، رتینوپاتی دیابتی.</li>
+                    <li><strong>خودروهای خودران:</strong> تشخیص خطوط، تشخیص عابر پیاده.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/yolo.png" alt="YOLO Object Detection Example">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">12 / 37</div>
+        </section>
+
+        <!-- Slide 13: Divider - RNNs -->
+        <section class="slide slide-divider">
+            <h2>۴. شبکه‌های عصبی بازگشتی (RNNs) و LSTMs</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">13 / 37</div>
+        </section>
+
+        <!-- Slide 14: 4.3 RNN Apps -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>کاربردهای RNN و LSTM</h2>
+                <p>RNN ها، و به‌ویژه نوع <code>LSTM</code> (حافظه طولانی کوتاه‌مدت)، با داشتن "حافظه" در داده‌های ترتیبی برتری دارند.</p>
+                <ul>
+                    <li><strong><code>Google Translate</code></strong> (قبل از ۲۰۱۷)</li>
+                    <li><strong><code>Amazon Alexa</code></strong> تشخیص گفتار</li>
+                    <li>صفحه‌کلیدهای پیش‌بینی‌کننده مانند <strong><code>Gboard</code></strong></li>
+                    <li><strong><code>AirBnB</code></strong> پیش‌بینی تقاضا (سری زمانی)</li>
+                    <li><strong>نظارت پزشکی:</strong> تحلیل سیگنال ECG/EEG.</li>
+                    <li><strong>خودروهای خودران:</strong> ادغام سنسورها، پیش‌بینی مسیر.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/ecg.png" alt="Time-Series Forecasting Graph">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">14 / 37</div>
+        </section>
+
+        <!-- Slide 15: Divider - Generative -->
+        <section class="slide slide-divider">
+            <h2>۵. مدل‌های مولد (Generative Models)</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">15 / 37</div>
+        </section>
+
+        <!-- Slide 16: 5.1 GANs -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>شبکه‌های مولد متخاصم (GANs)</h2>
+                <p>معماری هوشمندانه‌ای از دو شبکه رقیب:</p>
+                <ul>
+                    <li>یک <strong>مولد (Generator)</strong> که داده‌های جعلی (مثلاً تصویر) ایجاد می‌کند.</li>
+                    <li>یک <strong>متمایزکننده (Discriminator)</strong> که سعی می‌کند داده‌های جعلی را از واقعی تشخیص دهد.</li>
+                </ul>
+                <p>آن‌ها یکدیگر را آموزش می‌دهند تا زمانی که مولد در ایجاد تصاویر جعلی واقع‌گرایانه بسیار خوب شود.</p>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/GAN.png" alt="GAN Generator vs Discriminator">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">16 / 37</div>
+        </section>
+
+        <!-- Slide 17: 5.1.3 GAN Apps -->
+        <section class="slide slide-content-full">
+            <h2>کاربردهای GAN</h2>
+            <ul>
+                <li><strong><code>DeepFake</code></strong> برنامه‌های تعویض چهره</li>
+                <li><strong><code>ThisPersonDoesNotExist.com</code></strong></li>
+                <li><strong><code>StyleGAN</code> انویدیا</strong> تولید پرتره‌های هنری</li>
+                <li><strong><code>CycleGAN</code>:</strong>
+                    <ul>
+                        <li>ترجمه عکس به سبک ون گوگ</li>
+                        <li>تبدیل مناظر تابستان به زمستان</li>
+                    </ul>
+                </li>
+                <li><strong><code>DLSS</code> انویدیا:</strong> ارتقای مقیاس (Upscaling) بازی‌های ویدیویی</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">17 / 37</div>
+        </section>
+
+        <!-- Slide 18: 5.2 VAEs -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>خودکدگذار متغیر (VAEs)</h2>
+                <p>مدل مولد دیگری که ابتدا داده‌ها را به "فضای نهان" (نمایش فشرده) فشرده می‌کند و سپس یاد می‌گیرد داده‌های جدیدی از آن فضا تولید کند.</p>
+                <p>عالی برای یادگیری توزیع داده‌ها و یافتن ناهنجاری‌ها.</p>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/vae.png" alt="Latent Space Interpolation">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">18 / 37</div>
+        </section>
+
+        <!-- Slide 19: 5.2 VAE Apps -->
+        <section class="slide slide-content-full">
+            <h2>کاربردهای VAE</h2>
+            <ul>
+                <li><strong>تشخیص ناهنجاری:</strong> سیستم‌های تقلب کارت اعتباری</li>
+                <li><strong>صوت:</strong> تولید ویژگی‌های صوتی <code>Spotify</code></li>
+                <li><strong>موسیقی:</strong> <code>MusicVAE</code> هوش مصنوعی گوگل</li>
+                <li><strong>تشخیص ناهنجاری پزشکی:</strong> (مثلاً یافتن تومور در اسکن MRI)</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">19 / 37</div>
+        </section>
+
+        <!-- Slide 20: Divider - Transformers -->
+        <section class="slide slide-divider">
+            <h2>۶. ترنسفورمرها (Transformers)</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">20 / 37</div>
+        </section>
+
+        <!-- Slide 21: 6.3 Transformer Apps (Text) -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>کاربردهای ترنسفورمر (متن)</h2>
+                <p>مقاله "توجه تمام آن چیزی است که نیاز دارید" (۲۰۱۷) ترنسفورمر را معرفی کرد که پردازش توالی را متحول کرد و تمام LLM های مدرن را قدرت می‌بخشد.</p>
+                <ul>
+                    <li><strong><code>Google Translate</code></strong> (نسخه مدرن)</li>
+                    <li><strong><code>ChatGPT</code></strong> (مبتنی بر <code>GPT</code>)</li>
+                    <li><strong><code>BERT</code></strong> (رتبه‌بندی جستجوی گوگل)</li>
+                    <li><strong><code>GitHub Copilot</code></strong> (تولید کد)</li>
+                    <li><strong><code>Meta LLaMA</code></strong></li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/transformer.png" alt="Transformer">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">21 / 37</div>
+        </section>
+
+        <!-- Slide 22: 6.3 Transformer Apps (Vision) -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>کاربردهای ترنسفورمر (بینایی)</h2>
+                <p>ترنسفورمرها فقط برای متن نیستند. اکنون با موفقیت زیادی در بینایی نیز به کار می‌روند.</p>
+                <ul>
+                    <li><strong><code>Vision Transformer (ViT)</code>:</strong> تصویر را به "تکه‌ها" (مانند کلمات) تقسیم می‌کند و از ترنسفورمر برای طبقه‌بندی استفاده می‌کند.</li>
+                    <li><strong><code>OpenAI CLIP</code>:</strong> متن و تصاویر را به هم متصل می‌کند و مفاهیم را درک می‌کند ("عکسی از یک سگ با کلاه جشن").</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/vit.png" alt="Vision Transformer Patches">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">22 / 37</div>
+        </section>
+
+        <!-- Slide 23: 6.4 Industry Impact -->
+        <section class="slide slide-content-full">
+            <h2>تأثیر صنعتی (عصر "مدل‌های بنیادی")</h2>
+            <p>معماری ترنسفورمر منجر به مدل‌های عظیم و از پیش آموزش‌دیده‌ای شد که به عنوان پایه‌ای برای بسیاری از کاربردها عمل می‌کنند.</p>
+            <ul>
+                <li><strong><code>Google Bard / Gemini</code></strong></li>
+                <li><strong><code>Microsoft Copilot</code></strong> (قدرت گرفته از OpenAI)</li>
+                <li><strong><code>Amazon Bedrock</code></strong> سیستم‌های هوش مصنوعی</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">23 / 37</div>
+        </section>
+
+        <!-- Slide 24: Divider - Diffusion -->
+        <section class="slide slide-divider">
+            <h2>۷. مدل‌های انتشاری (Diffusion Models)</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">24 / 37</div>
+        </section>
+
+        <!-- Slide 25: 7.3 Diffusion Apps -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>کاربردهای مدل‌های انتشاری</h2>
+                <p>پیشرفته‌ترین حالت فعلی در تولید تصویر. آن‌ها با افزودن "نویز" به تصویر تا زمانی که به نویز خالص تبدیل شود کار می‌کنند، سپس مدلی را برای معکوس کردن فرآیند آموزش می‌دهند.</p>
+                <ul>
+                    <li><strong><code>Stable Diffusion</code></strong></li>
+                    <li><strong><code>DALL·E 2/3</code></strong></li>
+                    <li><strong><code>Midjourney</code></strong></li>
+                    <li><strong><code>Google Imagen</code></strong></li>
+                    <li><strong><code>Runway Gen-2</code></strong> (تولید ویدئو)</li>
+                    <li><strong><code>Adobe Firefly</code></strong> (Generative Fill)</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/dale2.webp" alt="AI Generated Image">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">25 / 37</div>
+        </section>
+
+        <!-- Slide 26: Divider - Multimodal -->
+        <section class="slide slide-divider">
+            <h2>۸. یادگیری عمیق چندوجهی (Multimodal)</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">26 / 37</div>
+        </section>
+
+        <!-- Slide 27: 8. Multimodal Apps -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>کاربردهای چندوجهی</h2>
+                <p>مدل‌هایی که چندین "حالت" اطلاعات را به طور همزمان درک و پردازش می‌کنند (مانند متن، تصاویر و صدا).</p>
+                <ul>
+                    <li><strong><code>OpenAI CLIP</code>:</strong> متن و تصاویر را به هم متصل می‌کند.</li>
+                    <li><strong><code>GPT-4o</code> و <code>Gemini 2.0</code>:</strong> دستیارهای چندوجهی بومی.</li>
+                    <li><strong><code>Google Bard</code></strong> درک تصویر.</li>
+                    <li><strong><code>Meta SeamlessM4T</code>:</strong> ترجمه گفتار + متن.</li>
+                    <li><strong><code>Be My Eyes</code></strong> دستیار هوش مصنوعی (قدرت گرفته از GPT-4).</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/gpt_40.png" alt="Multimodal Interface">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">27 / 37</div>
+        </section>
+
+        <!-- Slide 28: Divider - RL -->
+        <section class="slide slide-divider">
+            <h2>۹. یادگیری تقویتی (Deep RL)</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">28 / 37</div>
+        </section>
+
+        <!-- Slide 29: 9.3 Deep RL Apps -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>کاربردهای یادگیری تقویتی عمیق (Deep RL)</h2>
+                <p>Deep RL یادگیری عمیق (برای درک) را با یادگیری تقویتی (برای تصمیم‌گیری) ترکیب می‌کند تا "عامل‌هایی" ایجاد کند که از آزمون و خطا یاد می‌گیرند.</p>
+                <ul>
+                    <li><strong><code>DeepMind AlphaGo</code></strong> (قهرمان گو را شکست داد)</li>
+                    <li><strong><code>AlphaZero</code></strong> (شطرنج، شوگی، گو)</li>
+                    <li><strong>خودروهای خودران:</strong> (مانند سیاست رانندگی تسلا)</li>
+                    <li><strong><code>Boston Dynamics</code></strong> (رباتیک RL)</li>
+                    <li><strong>جراحی رباتیک:</strong> (مانند آموزش ربات‌های جراح)</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/jetson.png" alt="Robotic Surgery Arm">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">29 / 37</div>
+        </section>
+
+        <!-- Slide 30: Divider - Engineering -->
+        <section class="slide slide-divider">
+            <h2>۱۰. کاربردهای مهندسی عملی (MLOps)</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">30 / 37</div>
+        </section>
+
+        <!-- Slide 31: 10.1 Data Pipelines -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>خطوط لوله داده و آموزش</h2>
+                <p>مدیریت چرخه عمر مدل‌های هوش مصنوعی در محیط عملیاتی (MLOps).</p>
+                <ul>
+                    <li><strong><code>Google Vertex AI</code>:</strong> پلتفرم یکپارچه برای داده، آموزش و استقرار.</li>
+                    <li><strong><code>AWS Sagemaker</code>:</strong> پلتفرم ML سرتاسری آمازون.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/mlops.webp" alt="MLOps Lifecycle Diagram">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">31 / 37</div>
+        </section>
+
+        <!-- Slide 32: 10.3 Deployment -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>استقرار و بهینه‌سازی</h2>
+                <p>سریع و کوچک کردن مدل‌ها به اندازه‌ای که قابل استفاده باشند.</p>
+                <ul>
+                    <li><strong>ابر (استنتاج):</strong> <code>NVIDIA TensorRT</code> مدل‌ها را برای استنتاج سرور با توان عملیاتی بالا بهینه می‌کند.</li>
+                    <li><strong>لبه (On-Device):</strong> <code>TensorFlow Lite</code> و <code>Core ML</code> مدل‌ها را مستقیماً روی تلفن‌های همراه اجرا می‌کنند (مانند گوشی‌های Pixel).</li>
+                </ul>
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">32 / 37</div>
+        </section>
+
+        <!-- Slide 33: Divider - Ethics -->
+        <section class="slide slide-divider">
+            <h2>۱۱. ملاحظات اخلاقی و اجتماعی</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">33 / 37</div>
+        </section>
+
+        <!-- Slide 34: 11. Ethics Apps -->
+        <section class="slide slide-content">
+            <div class="content-text">
+                <h2>اخلاق، سوگیری، و ایمنی</h2>
+                <p>با قدرتمندتر شدن مدل‌ها، تأثیر اجتماعی آن‌ها به یک نگرانی اساسی تبدیل می‌شود.</p>
+                <ul>
+                    <li><strong>سوگیری (Bias):</strong> مدل‌ها می‌توانند سوگیری‌های انسانی را از داده‌های آموزشی یاد بگیرند و تقویت کنند.</li>
+                    <li><strong>اطلاعات نادرست:</strong> <code>DeepFakes</code> می‌تواند برای اهداف مخرب استفاده شود.</li>
+                    <li><strong>تنظیم‌گری:</strong> <code>EU AI Act</code> یکی از اولین تلاش‌های عمده برای تنظیم مقررات کاربردهای هوش مصنوعی است.</li>
+                    <li><strong>ابزارها:</strong> <code>Microsoft Video Authenticator</code> برای تشخیص DeepFakes.</li>
+                </ul>
+            </div>
+            <div class="media-placeholder">
+                <img src="images/deepfake.png" alt="DeepFake Detection Example">
+            </div>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">34 / 37</div>
+        </section>
+
+        <!-- Slide 35: Divider - Conclusion -->
+        <section class="slide slide-divider">
+            <h2>۱۲. نتیجه‌گیری و روندهای آینده</h2>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">35 / 37</div>
+        </section>
+
+        <!-- Slide 36: 12. Future Trends -->
+        <section class="slide slide-content-full">
+            <h2>روندهای آینده</h2>
+            <ul>
+                <li><strong><code>Mixture-of-Experts (MoE)</code>:</strong> استفاده از مدل‌های تخصصی کوچک‌تر که با هم کار می‌کنند (مانند Google Switch Transformer, LLaMA 3).</li>
+                <li><strong><code>یادگیری خودنظارتی</code>:</strong> مدل‌هایی که از داده‌های بدون برچسب یاد می‌گیرند و نیاز به مجموعه داده‌های عظیم برچسب‌گذاری شده توسط انسان را کاهش می‌دهند.</li>
+                <li><strong><code>مدل‌های کارآمد لبه</code>:</strong> مدل‌های قدرتمندتر که به صورت محلی روی دستگاه شما برای سرعت و حفظ حریم خصوصی اجرا می‌شوند (مانند Gemini Nano).</li>
+            </ul>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">36 / 37</div>
+        </section>
+
+        <!-- Slide 37: Final Slide -->
+        <section class="slide slide-title">
+            <h1>متشکرم</h1>
+            <p>پرسش و پاسخ</p>
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <div class="slide-number">37 / 37</div>
+        </section>
+
+    </main>
+
+</body>
+</html>
